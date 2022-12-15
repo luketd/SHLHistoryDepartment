@@ -68,21 +68,10 @@ shl_franchise_ps_stats <-
     "
   )
 
-shl_career_rs_stats <-
+test1 <-
   dbGetQuery(
     con,
     "
     SELECT * FROM shlCareerRegularSeason
-    "
-  )
-
-shl_career_ps_stats <-
-  dbGetQuery(
-    con,
-    "
-    SELECT playerName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
-    (SELECT * FROM shlCareerPlayoffs
-    INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
-    ON shlCareerPlayoffs.FHMID = FHMIDS)
     "
   )
