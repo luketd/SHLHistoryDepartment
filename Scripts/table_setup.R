@@ -68,10 +68,50 @@ shl_franchise_ps_stats <-
     "
   )
 
-test1 <-
+shl_career_rs_stats <-
   dbGetQuery(
     con,
     "
-    SELECT * FROM shlCareerRegularSeason
+    SELECT playerName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
+    (SELECT * FROM shlCareerRegularSeason
+    INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
+    ON shlCareerRegularSeason.FHMID = FHMIDS)
     "
   )
+shl_career_ps_stats <-
+  dbGetQuery(
+    con,
+    "
+    SELECT playerName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
+    (SELECT * FROM shlCareerPlayoffs
+    INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
+    ON shlCareerPlayoffs.FHMID = FHMIDS)
+    "
+  )
+
+return_table <- function(type, season){
+  if(type == "Career"){
+    if(season == "Playoffs"){
+      return(shl_career_ps_stats)
+    }
+    else{
+      return(shl_career_rs_stats)
+    }
+  }
+  else if(type == "Franchise"){
+    if(season == "Playoffs"){
+      return(shl_franchise_ps_stats)
+    }
+    else{
+      return(shl_franchise_rs_stats)
+    }
+  }
+  else{
+    if(season == "Playoffs"){
+      return(shl_ps_stats)
+    }
+    else{
+      return(shl_rs_stats)
+    }
+  }
+}

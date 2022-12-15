@@ -17,6 +17,7 @@ require(dbplyr)
 require(RSQLite)
 require(stringr)
 library(reactable)
+source("Scripts/table_setup.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -25,24 +26,30 @@ ui <- fluidPage(
   titlePanel("SHL Hall of Fame Data"),
 
   # Sidebar with a slider input for number of bins
-  sidebarLayout(
-    sidebarPanel(
-      selectInput(
-        "select",
-        h3("Playoffs"),
-        choices = list(
-          "All" = 1,
-          "Playoffs" = 2,
-          "Regular Season" = 3
-        ),
-        selected = "All"
-      ),
-      width = 2
+  sidebarLayout(sidebarPanel(
+    selectInput(
+      "type",
+      h3("Data"),
+      choices = list("Career" = "Career",
+                     "Franchise" = "Franchise",
+                     "Season-by-season" = "Season"),
+      selected = "Season-by-season"
     ),
+    selectInput(
+      "season",
+      h3("Playoffs"),
+      choices = list("Playoffs" = "Playoffs",
+                     "Regular Season" = "RegSeason"),
+      selected = "RegSeason"
+    ),
+    width = 2
+  ),
 
-    # Show a plot of the generated distribution
-    mainPanel(reactableOutput("skaterCareerStats"))
-  )
+  # Show a plot of the generated distribution
+  mainPanel(tabsetPanel(
+    tabPanel("Player Stats",
+             reactableOutput("stats_table"))
+  )))
 )
 
 # Define server logic required to draw a histogram
@@ -69,20 +76,10 @@ server <- function(input, output) {
     )
   )
 
-  output$skaterCareerStats <- renderReactable({
-
-    test_table <- filter(skater_season_stats, !grepl('CPU', playerName))
-    if(input$select != 1){
-      if(input$select == 2){
-        skater_season_stats <- filter(skater_season_stats, isPlayoffs == 1)
-      }
-      else{
-        skater_season_stats <- filter(skater_season_stats, isPlayoffs == 0)
-      }
-    }
+  output$stats_table <- renderReactable({
+    display_table <- return_table(input$type, input$season)
     reactable(
-      test_table,
-      #skater_season_stats[c("playerName", "teamName", "Season", "GamesPlayed", "Goals", "Assists", "Points", "PlusMinus", "PenaltyMinutes", "Hits", "Shots", "ShotsBlocked", "MinutesPlayed", "PPGoals", "PPAssists", "PPPoints", "PPMinutes", "PKGoals", "PKAssists", "PKPoints", "PKMinutes", "GameWinningGoals", "FaceoffsTotal", "FaceoffWins", "FightsWon", "FightsLost", "GvA", "TkA")],
+      display_table,
       bordered = TRUE,
       filterable = TRUE,
       showPageSizeOptions = TRUE,
