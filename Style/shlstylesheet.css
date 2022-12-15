@@ -1,0 +1,22 @@
+    
+    h2{color: white; text-align: center;}
+    .container-fluid {width: 100%; background-color: #262626;}
+    .topimg { width: 15%; display: block; margin: 0px auto 40px auto; }
+    .title { text-align: center; color: #6A66F2;}
+    .subtitle { text-align: center; color: #FFFFFF;}
+    .toprow { border-radius: 20px; margin: 60px 0px; padding: 30px; background-color: #6A66F2;}
+    .filters { margin: 0px auto; border-radius: 25px; padding: 10px; color: #FFFFFF;}
+    .shiny-input-container { width:100% !important; }
+    .table { width: auto;margin-top: 30px; color: #ffffff;max-width: 100%; overflow: auto;  margin-left: auto;
+    margin-right: auto; text-align: center;}
+    .table th {width: auto%;color: #7A5FD9; text-align: center;}
+    .table td {width: auto%;color: #FFFFFF; background-color: #262626;}
+    .table tr::before {width: auto%;color: #FFFFFF;}
+    .leaflet-top { z-index:999 !important; color: #ffffff;}
+    .row.table::before {color: #ffffff;}
+    .nav {text-align: center;}
+    #instructions { font-size: 48px; font-weight: bold;}
+    #description { font-size: 18px; }
+    .adjust-line-height { line-height: 2em; }
+    .adjust-main-height { line-height: 1.5em; font-size: 22px;}
+    .center {  text-align: center;  border: 3px solid green; }
