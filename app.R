@@ -28,18 +28,9 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(sidebarPanel(
     selectInput(
-      "type",
-      h3("Data"),
-      choices = list("Career" = "Career",
-                     "Franchise" = "Franchise",
-                     "Season-by-season" = "Season"),
-      selected = "Season-by-season"
-    ),
-    selectInput(
       "season",
       h3("Playoffs"),
-      choices = list("Playoffs" = "Playoffs",
-                     "Regular Season" = "RegSeason"),
+      choices = list("Regular Season" = "RegSeason", "Playoffs" = "Playoffs"),
       selected = "RegSeason"
     ),
     width = 2
@@ -47,8 +38,12 @@ ui <- fluidPage(
 
   # Show a plot of the generated distribution
   mainPanel(tabsetPanel(
-    tabPanel("Player Stats",
-             reactableOutput("stats_table"))
+    tabPanel("Season Stats",
+             reactableOutput("season_stats_table")),
+    tabPanel("Career Stats",
+             reactableOutput("career_stats_table")),
+    tabPanel("Franchise Stats",
+             reactableOutput("franchise_stats_table"))
   )))
 )
 
@@ -76,8 +71,38 @@ server <- function(input, output) {
     )
   )
 
-  output$stats_table <- renderReactable({
-    display_table <- return_table(input$type, input$season)
+  output$season_stats_table <- renderReactable({
+    display_table <- return_table("Season", input$season)
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "112.9%",
+      defaultColDef = colDef(align = "center", ),
+    )
+  })
+
+  output$career_stats_table <- renderReactable({
+    display_table <- return_table("Career", input$season)
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "112.9%",
+      defaultColDef = colDef(align = "center", ),
+    )
+  })
+
+  output$franchise_stats_table <- renderReactable({
+    display_table <- return_table("Franchise", input$season)
     reactable(
       display_table,
       bordered = TRUE,

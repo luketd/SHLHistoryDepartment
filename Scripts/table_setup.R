@@ -89,29 +89,39 @@ shl_career_ps_stats <-
     "
   )
 
-return_table <- function(type, season){
-  if(type == "Career"){
-    if(season == "Playoffs"){
-      return(shl_career_ps_stats)
-    }
-    else{
-      return(shl_career_rs_stats)
-    }
-  }
-  else if(type == "Franchise"){
-    if(season == "Playoffs"){
-      return(shl_franchise_ps_stats)
-    }
-    else{
-      return(shl_franchise_rs_stats)
-    }
-  }
-  else{
-    if(season == "Playoffs"){
-      return(shl_ps_stats)
-    }
-    else{
-      return(shl_rs_stats)
-    }
-  }
+# return_table <- function(type, season){
+#   if(type == "Career"){
+#     if(season == "Playoffs"){
+#       return(shl_career_ps_stats)
+#     }
+#     else{
+#       return(shl_career_rs_stats)
+#     }
+#   }
+#   else if(type == "Franchise"){
+#     if(season == "Playoffs"){
+#       return(shl_franchise_ps_stats)
+#     }
+#     else{
+#       return(shl_franchise_rs_stats)
+#     }
+#   }
+#   else{
+#     if(season == "Playoffs"){
+#       return(shl_ps_stats)
+#     }
+#     else{
+#       return(shl_rs_stats)
+#     }
+#   }
+# }
+
+return_table <- function(type, season) {
+  stats_table <- switch(
+    type,
+    "Career" = ifelse(season == "Playoffs", return(shl_career_ps_stats), return(shl_career_rs_stats)),
+    "Franchise" = ifelse(season == "Playoffs", return(shl_franchise_ps_stats), return(shl_franchise_rs_stats)),
+    "Season" = ifelse(season == "Playoffs", return(shl_ps_stats), return(shl_rs_stats)),
+  )
+  return(stats_table)
 }
