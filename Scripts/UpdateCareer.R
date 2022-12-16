@@ -21,13 +21,13 @@ year = readRDS("year")
 season <- readRDS("season")
 startLink <- paste0("https://simulationhockey.com/games/shl/S",season,"/csv/")
 {
-team_data <- read_delim(url(paste0(startLink,"team_data.csv")), delim=";")
-player_goalie_career_stats_rs<- read_delim(url(paste0(startLink,"player_goalie_career_stats_rs.csv")), delim=";")
-player_goalie_career_stats_po<- read_delim(url(paste0(startLink,"player_goalie_career_stats_po.csv")), delim=";")
-player_skater_career_stats_rs <- read_delim(url(paste0(startLink,"player_skater_career_stats_rs.csv")), delim=";")
-player_skater_career_stats_po <- read_delim(url(paste0(startLink,"player_skater_career_stats_po.csv")), delim=";")
-player_master <- read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
-player_ratings <- read_delim(url(paste0(startLink,"player_ratings.csv")), delim=";")
+team_data <- read_delim("team_data.csv",delim=";")#read_delim(url(paste0(startLink,"team_data.csv")), delim=";")
+player_goalie_career_stats_rs<- read_delim("player_goalie_career_stats_rs.csv",delim=";") #read_delim(url(paste0(startLink,"player_goalie_career_stats_rs.csv")), delim=";")
+player_goalie_career_stats_po<- read_delim("player_goalie_career_stats_po.csv",delim=";")#read_delim(url(paste0(startLink,"player_goalie_career_stats_po.csv")), delim=";")
+player_skater_career_stats_rs <-read_delim("player_skater_career_stats_rs.csv",delim=";") #read_delim(url(paste0(startLink,"player_skater_career_stats_rs.csv")), delim=";")
+player_skater_career_stats_po <- read_delim("player_skater_career_stats_po.csv",delim=";")#read_delim(url(paste0(startLink,"player_skater_career_stats_po.csv")), delim=";")
+player_master <-read_delim("player_master.csv",delim=";") #read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
+player_ratings <- read_delim("player_ratings.csv",delim=";")#read_delim(url(paste0(startLink,"player_ratings.csv")), delim=";")
 
 
 
