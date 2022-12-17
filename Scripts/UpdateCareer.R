@@ -10,24 +10,31 @@ require(stringr)
 
 
 
-leagueList = list("SHL", "SMJHL")
-league = "SHL"
+leagueList = list("shl", "smjhl")
 
+for(i in 1:length(leagueList)){
+  if(i == 1){
+    league <- "shl"
+  } else if (i == 2){
+    league <- "smjhl"
+  }
+}
+league <- "smjhl"
 #####################
 # S53=2019
 #####################
 
 year = readRDS("year")
 season <- readRDS("season")
-startLink <- paste0("https://simulationhockey.com/games/shl/S",season,"/csv/")
+startLink <- paste0("https://simulationhockey.com/games/",league,"/S",season,"/csv/")
 {
-team_data <- read_delim("team_data.csv",delim=";")#read_delim(url(paste0(startLink,"team_data.csv")), delim=";")
-player_goalie_career_stats_rs<- read_delim("player_goalie_career_stats_rs.csv",delim=";") #read_delim(url(paste0(startLink,"player_goalie_career_stats_rs.csv")), delim=";")
-player_goalie_career_stats_po<- read_delim("player_goalie_career_stats_po.csv",delim=";")#read_delim(url(paste0(startLink,"player_goalie_career_stats_po.csv")), delim=";")
-player_skater_career_stats_rs <-read_delim("player_skater_career_stats_rs.csv",delim=";") #read_delim(url(paste0(startLink,"player_skater_career_stats_rs.csv")), delim=";")
-player_skater_career_stats_po <- read_delim("player_skater_career_stats_po.csv",delim=";")#read_delim(url(paste0(startLink,"player_skater_career_stats_po.csv")), delim=";")
-player_master <-read_delim("player_master.csv",delim=";") #read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
-player_ratings <- read_delim("player_ratings.csv",delim=";")#read_delim(url(paste0(startLink,"player_ratings.csv")), delim=";")
+team_data <- read_delim(url(paste0(startLink,"team_data.csv")), delim=";")
+player_goalie_career_stats_rs<- read_delim(url(paste0(startLink,"player_goalie_career_stats_rs.csv")), delim=";")
+player_goalie_career_stats_po<- read_delim(url(paste0(startLink,"player_goalie_career_stats_po.csv")), delim=";")
+player_skater_career_stats_rs <-read_delim(url(paste0(startLink,"player_skater_career_stats_rs.csv")), delim=";")
+player_skater_career_stats_po <- read_delim(url(paste0(startLink,"player_skater_career_stats_po.csv")), delim=";")
+player_master <-read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
+player_ratings <- read_delim(url(paste0(startLink,"player_ratings.csv")), delim=";")
 
 
 
@@ -81,14 +88,14 @@ player_goalie_career_stats_rs$isPlayoffs <- 0
 player_skater_career_stats_po$FightsLost <- player_skater_career_stats_po$Fights - player_skater_career_stats_po$`Fights Won`
 player_skater_career_stats_rs$FightsLost <- player_skater_career_stats_rs$Fights - player_skater_career_stats_rs$`Fights Won`
 
-if(league == "SHL"){
+if(league == "shl"){
   player_skater_career_stats_po$LeagueId <- 1
   player_skater_career_stats_rs$LeagueId <- 1
   player_goalie_career_stats_po$LeagueId <- 1
   player_goalie_career_stats_rs$LeagueId <- 1
 
 
-} else if(league == "SMJHL") {
+} else if(league == "smjhl") {
   player_skater_career_stats_po$LeagueId <- 2
   player_skater_career_stats_rs$LeagueId <- 2
   player_goalie_career_stats_po$LeagueId <- 2
@@ -128,11 +135,18 @@ playerGoalies <- playerGoalies %>%
 con <- dbConnect(SQLite(), "database/SHLHistory.db")
 dbConnect(SQLite(), "database/SHLHistory")
 
-#AllPlayers <- dbGetQuery(con, "SELECT * FROM playerMaster")
+if(league == "shl") {
+  AllPlayers <- dbGetQuery(con, "SELECT * FROM playerMaster")
+  NewPlayers <- subset(player_master, !(player_master$FHMIDS %in% AllPlayers$FHMIDS))
+  dbWriteTable(con, "playerMaster", NewPlayers, overwrite =F, append = T, row.names=FALSE)
+} else if (league == "smjhl"){
+  AllPlayers <- dbGetQuery(con, "SELECT * FROM smjhlPlayerMaster")
+  NewPlayers <- subset(player_master, !(player_master$FHMIDS %in% AllPlayers$FHMIDS))
+  dbWriteTable(con, "smjhlPlayerMaster", NewPlayers, overwrite =F, append = T, row.names=FALSE)
+}
 
-#NewPlayers <- subset(player_master, !(player_master$FHMIDS %in% AllPlayers$FHMIDS))
 
-#dbWriteTable(con, "playerMaster", NewPlayers, overwrite =F, append = T, row.names=FALSE)
+
 dbWriteTable(con, "shlSkaters", playerSkaters, overwrite = F, append = T, row.names=FALSE)
 dbWriteTable(con, "shlGoalies", playerGoalies, overwrite = F, append = T, row.names=FALSE)
 
