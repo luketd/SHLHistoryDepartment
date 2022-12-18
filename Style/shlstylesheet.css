@@ -1,5 +1,7 @@
-    
+
     h2{color: white; text-align: center;}
+    h3{color: black; text-align: center;}
+    h4{color: black; text-align: center;}
     .container-fluid {width: 100%; background-color: #262626;}
     .topimg { width: 15%; display: block; margin: 0px auto 40px auto; }
     .title { text-align: center; color: #6A66F2;}
@@ -20,3 +22,4 @@
     .adjust-line-height { line-height: 2em; }
     .adjust-main-height { line-height: 1.5em; font-size: 22px;}
     .center {  text-align: center;  border: 3px solid green; }
+    body { background-color: #262626; color: white;}

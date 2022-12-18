@@ -1,12 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 require(tidyverse)
 library(httr)
@@ -17,40 +8,91 @@ require(dbplyr)
 require(RSQLite)
 require(stringr)
 library(reactable)
+library(dplyr)
 source("Scripts/table_setup.R")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-  includeCSS("Style/shlstylesheet.css"),
-  # Application title
-  titlePanel("SHL Hall of Fame Data"),
+ui <-
+  navbarPage(
+    "SHL Hall of Fame DB",
+    includeCSS("Style/shlstylesheet.css"),
 
-  # Sidebar with a slider input for number of bins
-  sidebarLayout(sidebarPanel(
-    selectInput(
-      "season",
-      h3("Playoffs"),
-      choices = list("Regular Season" = "RegSeason", "Playoffs" = "Playoffs"),
-      selected = "RegSeason"
-    ),
-    width = 2
-  ),
+    tabPanel("Stats", fluidPage(
+      # Application title
+      titlePanel("SHL Hall of Fame Data"),
 
-  # Show a plot of the generated distribution
-  mainPanel(tabsetPanel(
-    tabPanel("Season Stats",
-             reactableOutput("season_stats_table")),
-    tabPanel("Career Stats",
-             reactableOutput("career_stats_table")),
-    tabPanel("Franchise Stats",
-             reactableOutput("franchise_stats_table"))
-  )))
-)
+      # Sidebar with a slider input for number of bins
+      sidebarLayout(sidebarPanel(
+        selectInput(
+          "season",
+          h4("Playoffs"),
+          choices = list("Regular Season" = "RegSeason", "Playoffs" = "Playoffs"),
+          selected = "RegSeason"
+        ),
+        width = 2
+      ),
+
+      # Show a plot of the generated distribution
+      mainPanel(
+        tabsetPanel(
+          tabPanel("Season Stats",
+                   reactableOutput("season_stats_table")),
+          tabPanel("Career Stats",
+                   reactableOutput("career_stats_table")),
+          tabPanel("Franchise Stats",
+                   reactableOutput("franchise_stats_table"))
+        )
+      ))
+    )),
+    tabPanel(
+      "Leaderboards",
+      titlePanel("SHL Hall of Fame Data"),
+      sidebarLayout(sidebarPanel(
+
+        selectInput("timeline", h4("Timeline"),
+                    choices = list("Regular Season" = "RegSeason", "Playoffs"), selected = "RegSeason"),
+        selectInput(
+          "statLeader",
+          h4("Stat"),
+          choices = list(
+            'Goals',
+            'Assists',
+            'Points',
+            'PlusMinus',
+            'PenaltyMinutes',
+            'Hits',
+            'Shots',
+            'ShotsBlocked',
+            'MinutesPlayed',
+            'PPGoals',
+            'PPAssists',
+            'PPPoints',
+            'PPMinutes',
+            'PKGoals',
+            'PKAssists',
+            'PKPoints',
+            'PKMinutes',
+            'GameWinningGoals',
+            'FaceoffsTotal',
+            'FaceoffWins',
+            'FightsWon',
+            'FightsLost',
+            'GvA',
+            'TkA'
+          ),
+          selected = "Goals"
+        ),h4("Season Range"),
+        sliderInput("seasonSlider", "",
+                    min = 1, max = max(shl_rs_stats$Season), value = c(1, max(shl_rs_stats$Season)), step = 1, round = TRUE),
+        width = 2
+      ), mainPanel(plotOutput("kdaBar")))
+    )
+  )
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   con <- dbConnect(SQLite(), "database/SHLHistory.db")
-  dbConnect(SQLite(), "database/SHLHistory")
 
   options(
     reactable.theme = reactableTheme(
@@ -77,12 +119,43 @@ server <- function(input, output) {
       display_table,
       bordered = TRUE,
       filterable = TRUE,
+      columns = list(
+        teamName = colDef(
+          filterInput = function(values, name) {
+            tags$select(
+              onchange = sprintf(
+                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+                name
+              ),
+              tags$option(value = "", "All"),
+              lapply(unique(values), tags$option),
+              "aria-label" = sprintf("Filter %s", name),
+              style = "width: 100%; height: 28px; background-color: #262626;"
+            )
+          }
+        ),
+        Pos = colDef(
+          filterInput = function(values, name) {
+            tags$select(
+              onchange = sprintf(
+                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+                name
+              ),
+              tags$option(value = "", "All"),
+              lapply(unique(values), tags$option),
+              "aria-label" = sprintf("Filter %s", name),
+              style = "width: 100%; height: 28px; background-color: #262626;"
+            )
+          }
+        )
+      ),
       showPageSizeOptions = TRUE,
       striped = TRUE,
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center", ),
+      defaultColDef = colDef(align = "center",),
+      elementId = "team-select"
     )
   })
 
@@ -97,7 +170,7 @@ server <- function(input, output) {
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center", ),
+      defaultColDef = colDef(align = "center",),
     )
   })
 
@@ -107,15 +180,62 @@ server <- function(input, output) {
       display_table,
       bordered = TRUE,
       filterable = TRUE,
+      columns = list(teamName = colDef(
+        filterInput = function(values, name) {
+          tags$select(
+            onchange = sprintf(
+              "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+              name
+            ),
+            tags$option(value = "", "All"),
+            lapply(unique(values), tags$option),
+            "aria-label" = sprintf("Filter %s", name),
+            style = "width: 100%; height: 28px; background-color: #262626;"
+          )
+        }
+      )),
       showPageSizeOptions = TRUE,
       striped = TRUE,
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center", ),
+      defaultColDef = colDef(align = "center",),
+      elementId = "team-select"
     )
+  })
+
+  output$kdaBar <- renderPlot({
+
+    topChart <- return_table("Season", input$timeline) %>%
+      filter((input$seasonSlider[[1]]<= Season)&(input$seasonSlider[[2]]>= Season)) %>%
+      select(playerName, Season, Stat = input$statLeader) %>%
+      group_by(playerName) %>%
+      mutate(name = paste0(playerName, ' (S',Season, ')')) %>%
+      summarise(name, Season, stat = Stat) %>%
+      ungroup(playerName) %>%
+      arrange(desc(stat)) %>%
+      top_n(10) %>%
+      unique()
+
+    print(paste0(input$seasonSlider[[1]], input$seasonSlider[[2]]))
+
+    ggplot(topChart, aes(reorder(name, stat), y=stat)) +
+      geom_bar(stat = "identity", fill = "#4cc9f0") +
+      geom_text(aes(label=stat), size = 5, hjust=-0.5, color="#FFFFFF") +
+      coord_flip() +
+      ggtitle(paste0("Top 15 seasons by ", input$statLeader)) +
+      xlab("Player Name") +
+      ylab(input$statLeader) +
+      theme_minimal(base_size = 20) +
+      theme(plot.background = element_rect(color = "#FFFFFF")) +
+      theme(plot.title = element_text(hjust = 0.5, color = "#FFFFFF")) +
+      theme(axis.text.x = element_text(colour = "#FFFFFF")) +
+      theme(axis.text.y = element_text(colour = "#FFFFFF")) +
+      theme(axis.title = element_text(colour = "#FFFFFF")) +
+      theme(plot.background = element_rect(fill = "#262626")) +
+      theme(panel.grid.major.y = element_blank()) +
+      theme(panel.grid.major.x = element_blank())
   })
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)

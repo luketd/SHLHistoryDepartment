@@ -14,7 +14,7 @@ shl_rs_stats <-
   dbGetQuery(
     con,
     "
-    SELECT playerName, teamName, Season, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost, GvA, TkA
+    SELECT playerName, Pos, teamName, Season, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost, GvA, TkA
     FROM
     (SELECT *
     FROM shlSkaters
@@ -30,7 +30,7 @@ shl_ps_stats <-
   dbGetQuery(
     con,
     "
-    SELECT playerName, teamName, Season, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost, GvA, TkA
+    SELECT playerName, Pos, teamName, Season, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost, GvA, TkA
     FROM
     (SELECT *
     FROM shlSkaters
@@ -88,33 +88,6 @@ shl_career_ps_stats <-
     ON shlCareerPlayoffs.FHMID = FHMIDS)
     "
   )
-
-# return_table <- function(type, season){
-#   if(type == "Career"){
-#     if(season == "Playoffs"){
-#       return(shl_career_ps_stats)
-#     }
-#     else{
-#       return(shl_career_rs_stats)
-#     }
-#   }
-#   else if(type == "Franchise"){
-#     if(season == "Playoffs"){
-#       return(shl_franchise_ps_stats)
-#     }
-#     else{
-#       return(shl_franchise_rs_stats)
-#     }
-#   }
-#   else{
-#     if(season == "Playoffs"){
-#       return(shl_ps_stats)
-#     }
-#     else{
-#       return(shl_rs_stats)
-#     }
-#   }
-# }
 
 return_table <- function(type, season) {
   stats_table <- switch(
