@@ -19,7 +19,7 @@ for(i in 1:length(leagueList)){
     league <- "smjhl"
   }
 }
-league <- "smjhl"
+league <- "shl"
 #####################
 # S53=2019
 #####################
@@ -33,7 +33,7 @@ player_goalie_career_stats_rs<- read_delim(url(paste0(startLink,"player_goalie_c
 player_goalie_career_stats_po<- read_delim(url(paste0(startLink,"player_goalie_career_stats_po.csv")), delim=";")
 player_skater_career_stats_rs <-read_delim(url(paste0(startLink,"player_skater_career_stats_rs.csv")), delim=";")
 player_skater_career_stats_po <- read_delim(url(paste0(startLink,"player_skater_career_stats_po.csv")), delim=";")
-player_master <-read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
+player_master <- read_delim(url(paste0(startLink,"player_master.csv")), delim=";")
 player_ratings <- read_delim(url(paste0(startLink,"player_ratings.csv")), delim=";")
 
 
@@ -45,14 +45,26 @@ player_ratings <- read_delim(url(paste0(startLink,"player_ratings.csv")), delim=
 ##############################################################
 {
 
-player_ratings$pos <- ""
-for(b in 1:length(player_ratings$G)) {
-  if (player_ratings$LD[b] >=15) {
-    player_ratings$pos[b] <- "D"
-  } else if (player_ratings$C[b] >= 15){
-    player_ratings$pos[b] <- "F"
+if(league == "smjhl"){
+  player_ratings$pos <- ""
+  for(b in 1:length(player_ratings$G)) {
+    if (player_ratings$LD[b] == 20 || player_ratings$RD[b] == 20) {
+      player_ratings$pos[b] <- "D"
+    } else if (player_ratings$C[b] == 20 || player_ratings$LW[b] == 20 || player_ratings$RW[b] == 20){
+      player_ratings$pos[b] <- "F"
+    }
+  }
+} else {
+  player_ratings$pos <- ""
+  for(b in 1:length(player_ratings$G)) {
+    if (player_ratings$LD[b] >=15) {
+      player_ratings$pos[b] <- "D"
+    } else if (player_ratings$C[b] >= 15){
+      player_ratings$pos[b] <- "F"
+    }
   }
 }
+
 
 position <- player_ratings %>%
   select(PlayerId, pos)
