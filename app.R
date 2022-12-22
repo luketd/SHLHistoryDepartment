@@ -15,8 +15,7 @@ source("Scripts/table_setup.R")
 ui <-
   navbarPage(
     "SHL Hall of Fame DB",
-    includeCSS("Style/shlstylesheet.css"),
-
+    header = includeCSS("Style/shlstylesheet.css"),
     tabPanel("Stats", fluidPage(
       # Application title
       titlePanel("SHL Hall of Fame Data"),
@@ -47,45 +46,79 @@ ui <-
     tabPanel(
       "Leaderboards",
       titlePanel("SHL Hall of Fame Data"),
-      sidebarLayout(sidebarPanel(
-
-        selectInput("timeline", h4("Timeline"),
-                    choices = list("Regular Season" = "RegSeason", "Playoffs"), selected = "RegSeason"),
-        selectInput(
-          "statLeader",
-          h4("Stat"),
-          choices = list(
-            'Goals',
-            'Assists',
-            'Points',
-            'PlusMinus',
-            'PenaltyMinutes',
-            'Hits',
-            'Shots',
-            'ShotsBlocked',
-            'MinutesPlayed',
-            'PPGoals',
-            'PPAssists',
-            'PPPoints',
-            'PPMinutes',
-            'PKGoals',
-            'PKAssists',
-            'PKPoints',
-            'PKMinutes',
-            'GameWinningGoals',
-            'FaceoffsTotal',
-            'FaceoffWins',
-            'FightsWon',
-            'FightsLost',
-            'GvA',
-            'TkA'
+      sidebarLayout(
+        sidebarPanel(
+          selectInput(
+            "era",
+            h4("SHL Era"),
+            choices = list(
+              "Custom",
+              "Dead Puck Era (S1-S5)",
+              "Experimental Era (S6-S8)",
+              "Inflation Era (S9-S11)",
+              "52-Game Era (S21-S24)",
+              "Realism Era (S12-S20)",
+              "Realism Era (S25-S52)",
+              "STHS Era (S1-S52)",
+              "FHM6 Era",
+              "66-Game FHM6 Era",
+              "50-Game FHM6 Era",
+              "FHM8 Records"
+            ),
+            selected = "Custom"
           ),
-          selected = "Goals"
-        ),h4("Season Range"),
-        sliderInput("seasonSlider", "",
-                    min = 1, max = max(shl_rs_stats$Season), value = c(1, max(shl_rs_stats$Season)), step = 1, round = TRUE),
-        width = 2
-      ), mainPanel(plotOutput("kdaBar")))
+          selectInput(
+            "timeline",
+            h4("Timeline"),
+            choices = list("Regular Season" = "RegSeason", "Playoffs"),
+            selected = "RegSeason"
+          ),
+          selectInput(
+            "statLeader",
+            h4("Stat"),
+            choices = list(
+              'Goals',
+              'Assists',
+              'Points',
+              'PlusMinus',
+              'PenaltyMinutes',
+              'Hits',
+              'Shots',
+              'ShotsBlocked',
+              'MinutesPlayed',
+              'PPGoals',
+              'PPAssists',
+              'PPPoints',
+              'PPMinutes',
+              'PKGoals',
+              'PKAssists',
+              'PKPoints',
+              'PKMinutes',
+              'GameWinningGoals',
+              'FaceoffsTotal',
+              'FaceoffWins',
+              'FightsWon',
+              'FightsLost',
+              'GvA',
+              'TkA'
+            ),
+            selected = "Goals"
+          ),
+          h4("Season Range"),
+          uiOutput("eraSlider"),
+          width = 2
+        ),
+        mainPanel(plotOutput("kdaBar"))
+      )
+    ),
+    tabPanel(
+      "Achievements",
+      reactableOutput("achievementTable")
+    ),
+    tabPanel(
+      "HoF Eligibility Tool",
+      reactableOutput("hofEligibility"),
+      align="center"
     )
   )
 
@@ -154,7 +187,7 @@ server <- function(input, output) {
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center",),
+      defaultColDef = colDef(align = "center"),
       elementId = "team-select"
     )
   })
@@ -170,7 +203,7 @@ server <- function(input, output) {
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center",),
+      defaultColDef = colDef(align = "center"),
     )
   })
 
@@ -199,29 +232,32 @@ server <- function(input, output) {
       highlight = TRUE,
       resizable = TRUE,
       width = "112.9%",
-      defaultColDef = colDef(align = "center",),
+      defaultColDef = colDef(align = "center"),
       elementId = "team-select"
     )
   })
 
   output$kdaBar <- renderPlot({
-
     topChart <- return_table("Season", input$timeline) %>%
-      filter((input$seasonSlider[[1]]<= Season)&(input$seasonSlider[[2]]>= Season)) %>%
+      filter((input$seasonSlider[[1]] <= Season) &
+               (input$seasonSlider[[2]] >= Season)) %>%
       select(playerName, Season, Stat = input$statLeader) %>%
       group_by(playerName) %>%
-      mutate(name = paste0(playerName, ' (S',Season, ')')) %>%
+      mutate(name = paste0(playerName, ' (S', Season, ')')) %>%
       summarise(name, Season, stat = Stat) %>%
       ungroup(playerName) %>%
       arrange(desc(stat)) %>%
       top_n(10) %>%
       unique()
 
-    print(paste0(input$seasonSlider[[1]], input$seasonSlider[[2]]))
-
-    ggplot(topChart, aes(reorder(name, stat), y=stat)) +
+    ggplot(topChart, aes(reorder(name, stat), y = stat)) +
       geom_bar(stat = "identity", fill = "#4cc9f0") +
-      geom_text(aes(label=stat), size = 5, hjust=-0.5, color="#FFFFFF") +
+      geom_text(
+        aes(label = stat),
+        size = 5,
+        hjust = -0.5,
+        color = "#FFFFFF"
+      ) +
       coord_flip() +
       ggtitle(paste0("Top 15 seasons by ", input$statLeader)) +
       xlab("Player Name") +
@@ -235,6 +271,65 @@ server <- function(input, output) {
       theme(plot.background = element_rect(fill = "#262626")) +
       theme(panel.grid.major.y = element_blank()) +
       theme(panel.grid.major.x = element_blank())
+  })
+
+  output$eraSlider <- renderUI({
+    sliderInput(
+      "seasonSlider",
+      "",
+      min = ifelse(input$era!="Custom", return_era_seasons(input$era)[[1]], 1),
+      max = ifelse(input$era!="Custom", return_era_seasons(input$era)[[2]], max(shl_rs_stats$Season)),
+      value =  c(1, max(
+        shl_rs_stats$Season
+      )),
+      step = 1,
+      round = TRUE
+    )
+  })
+
+  output$achievementTable <- renderReactable({
+    display_table <- achievements_table
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      columns = list(Achievement = colDef(
+        align = "center",
+        filterInput = function(values, name) {
+          tags$select(
+            onchange = sprintf(
+              "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+              name
+            ),
+            tags$option(value = "", "All"),
+            lapply(unique(values), tags$option),
+            "aria-label" = sprintf("Filter %s", name),
+            style = "width: 100%; height: 28px; background-color: #262626; text-align: center;"
+          )
+        }
+      )),
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      defaultColDef = colDef(align = "center"),
+      elementId = "team-select"
+    )
+  })
+
+  output$hofEligibility <- renderReactable({
+    display_table <- hof_eligibility
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "50%",
+      defaultColDef = colDef(align = "center"),
+    )
   })
 }
 
