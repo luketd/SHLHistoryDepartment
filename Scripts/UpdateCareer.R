@@ -19,7 +19,7 @@ for(i in 1:length(leagueList)){
     league <- "smjhl"
   }
 }
-league <- "smjhl"
+league <- "shl"
 #####################
 # S53=2019
 #####################
@@ -70,6 +70,16 @@ player_skater_career_stats_rs <- player_skater_career_stats_rs %>%
   filter(Year == year)
 player_skater_career_stats_po <- player_skater_career_stats_po %>%
   filter(Year == year)
+
+#Update MinutesPlayed
+player_goalie_career_stats_po$Min <- player_goalie_career_stats_po$Min / 60
+player_goalie_career_stats_rs$Min <- player_goalie_career_stats_rs$Min / 60
+player_skater_career_stats_po$TOI <- (player_skater_career_stats_po$TOI + player_skater_career_stats_po$PPTOI + player_skater_career_stats_po$SHTOI)/60
+player_skater_career_stats_rs$TOI <- (player_skater_career_stats_rs$TOI + player_skater_career_stats_rs$PPTOI + player_skater_career_stats_rs$SHTOI)/60
+player_skater_career_stats_rs$PPTOI <- player_skater_career_stats_rs$PPTOI / 60
+player_skater_career_stats_rs$SHTOI <- player_skater_career_stats_rs$SHTOI / 60
+player_skater_career_stats_po$PPTOI <- player_skater_career_stats_po$PPTOI / 60
+player_skater_career_stats_po$SHTOI <- player_skater_career_stats_po$SHTOI / 60
 
 player_skater_career_stats_po$isPlayoffs <- 1
 player_skater_career_stats_rs$isPlayoffs <- 0
