@@ -23,6 +23,12 @@ ui <-
       # Sidebar with a slider input for number of bins
       sidebarLayout(sidebarPanel(
         selectInput(
+        "position",
+        h4("Position"),
+        choices = list("Goalie", "Skater"),
+        selected = "Skater"
+        ),
+        selectInput(
           "season",
           h4("Playoffs"),
           choices = list("Regular Season" = "RegSeason", "Playoffs" = "Playoffs"),
@@ -147,53 +153,22 @@ server <- function(input, output) {
   )
 
   output$season_stats_table <- renderReactable({
-    display_table <- return_table("Season", input$season)
+    display_table <- return_goalies("Season", input$season)
+    print(display_table)
     reactable(
       display_table,
       bordered = TRUE,
       filterable = TRUE,
-      columns = list(
-        teamName = colDef(
-          filterInput = function(values, name) {
-            tags$select(
-              onchange = sprintf(
-                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
-                name
-              ),
-              tags$option(value = "", "All"),
-              lapply(unique(values), tags$option),
-              "aria-label" = sprintf("Filter %s", name),
-              style = "width: 100%; height: 28px; background-color: #262626;"
-            )
-          }
-        ),
-        Pos = colDef(
-          filterInput = function(values, name) {
-            tags$select(
-              onchange = sprintf(
-                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
-                name
-              ),
-              tags$option(value = "", "All"),
-              lapply(unique(values), tags$option),
-              "aria-label" = sprintf("Filter %s", name),
-              style = "width: 100%; height: 28px; background-color: #262626;"
-            )
-          }
-        )
-      ),
       showPageSizeOptions = TRUE,
       striped = TRUE,
       highlight = TRUE,
       resizable = TRUE,
-      width = "112.9%",
-      defaultColDef = colDef(align = "center"),
-      elementId = "team-select"
+      width = "112.9%"
     )
   })
 
   output$career_stats_table <- renderReactable({
-    display_table <- return_table("Career", input$season)
+    display_table <- return_skaters("Career", input$season)
     reactable(
       display_table,
       bordered = TRUE,
@@ -208,7 +183,7 @@ server <- function(input, output) {
   })
 
   output$franchise_stats_table <- renderReactable({
-    display_table <- return_table("Franchise", input$season)
+    display_table <- return_skaters("Franchise", input$season)
     reactable(
       display_table,
       bordered = TRUE,
@@ -238,7 +213,7 @@ server <- function(input, output) {
   })
 
   output$kdaBar <- renderPlot({
-    topChart <- return_table("Season", input$timeline) %>%
+    topChart <- return_skaters("Season", input$timeline) %>%
       filter((input$seasonSlider[[1]] <= Season) &
                (input$seasonSlider[[2]] >= Season)) %>%
       select(playerName, Season, Stat = input$statLeader) %>%

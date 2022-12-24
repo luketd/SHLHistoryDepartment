@@ -143,7 +143,7 @@ shl_goalie_rs_stats <-
     "
   )
 
-shl_goalie_rs_stats <-
+shl_goalie_ps_stats <-
   dbGetQuery(
     con,
     "
@@ -185,14 +185,46 @@ shl_goalie_franchise_ps_stats <-
     "
   )
 
-#View(shl_goalie_franchise_rs_stats)
+shl_goalie_career_rs_stats <-
+  dbGetQuery(
+    con,
+    "
+    SELECT playerName, GamesPlayed, Wins, Losses, OvertimeLosses, Minutes, Shutouts, GoalsAgainst, ShotsAgainst, EmptyGoalAgainst FROM
+    (SELECT * FROM shlGoaliesCareer
+    INNER JOIN (SELECT Name as playerName, FHMIDS FROM playerMaster)
+    ON FHMID = FHMIDS
+    WHERE isPlayoffs = 0)
+    "
+  )
 
-return_table <- function(type, season) {
+shl_goalie_career_ps_stats <-
+  dbGetQuery(
+    con,
+    "
+    SELECT playerName, GamesPlayed, Wins, Losses, OvertimeLosses, Minutes, Shutouts, GoalsAgainst, ShotsAgainst, EmptyGoalAgainst FROM
+    (SELECT * FROM shlGoaliesCareer
+    INNER JOIN (SELECT Name as playerName, FHMIDS FROM playerMaster)
+    ON FHMID = FHMIDS
+    WHERE isPlayoffs = 1)
+    "
+  )
+
+return_skaters <- function(type, season) {
+    stats_table <- switch(
+      type,
+      "Career" = ifelse(season == "Playoffs", return(shl_career_ps_stats), return(shl_career_rs_stats)),
+      "Franchise" = ifelse(season == "Playoffs", return(shl_franchise_ps_stats), return(shl_franchise_rs_stats)),
+      "Season" = ifelse(season == "Playoffs", return(shl_ps_stats), return(shl_rs_stats)),
+    )
+  return(stats_table)
+}
+
+return_goalies <- function(type, season) {
   stats_table <- switch(
     type,
-    "Career" = ifelse(season == "Playoffs", return(shl_career_ps_stats), return(shl_career_rs_stats)),
-    "Franchise" = ifelse(season == "Playoffs", return(shl_franchise_ps_stats), return(shl_franchise_rs_stats)),
-    "Season" = ifelse(season == "Playoffs", return(shl_ps_stats), return(shl_rs_stats)),
+    "Career" = ifelse(season == "Playoffs", return(shl_goalie_career_ps_stats), return(shl_goalie_career_rs_stats)),
+    "Franchise" = ifelse(season == "Playoffs", return(shl_goalie_franchise_ps_stats), return(shl_goalie_franchise_rs_stats)),
+    "Season" = ifelse(season == "Playoffs", return(shl_goalie_ps_stats), return(shl_goalie_rs_stats)),
   )
   return(stats_table)
 }
