@@ -153,8 +153,13 @@ server <- function(input, output) {
   )
 
   output$season_stats_table <- renderReactable({
-    display_table <- return_goalies("Season", input$season)
+    goalie_table <- return_goalies("Season", input$season)
+    print(goalie_table)
+    skater_table <- return_skaters("Season", input$season)
+    print(skater_table)
+    display_table <- ifelse(input$position == "Skater", return(skater_table), return(goalie_table))
     print(display_table)
+    print("Skater")
     reactable(
       display_table,
       bordered = TRUE,
@@ -163,7 +168,8 @@ server <- function(input, output) {
       striped = TRUE,
       highlight = TRUE,
       resizable = TRUE,
-      width = "112.9%"
+      width = "100%",
+      defaultColDef = colDef(align = "center")
     )
   })
 
@@ -177,7 +183,7 @@ server <- function(input, output) {
       striped = TRUE,
       highlight = TRUE,
       resizable = TRUE,
-      width = "112.9%",
+      width = "100%",
       defaultColDef = colDef(align = "center"),
     )
   })

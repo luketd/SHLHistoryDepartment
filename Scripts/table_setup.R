@@ -10,21 +10,21 @@ require(stringr)
 con <- dbConnect(SQLite(), "database/SHLHistory.db")
 dbConnect(SQLite(), "database/SHLHistory")
 
-return_era_seasons <- function(era){
+return_era_seasons <- function(era) {
   print(era)
   seasons <- switch(
     era,
-    "Dead Puck Era (S1-S5)" = c(1,5),
-    "Experimental Era (S6-S8)" = c(6,8),
-    "Inflation Era (S9-S11)" = c(9,11),
-    "52-Game Era (S21-S24)" = c(21,24),
+    "Dead Puck Era (S1-S5)" = c(1, 5),
+    "Experimental Era (S6-S8)" = c(6, 8),
+    "Inflation Era (S9-S11)" = c(9, 11),
+    "52-Game Era (S21-S24)" = c(21, 24),
     "Realism Era (S12-S20)" = c(12, 20),
     "Realism Era (S25-S52)" = c(25, 52),
-    "STHS Era (S1-S52)" = c(1,52),
+    "STHS Era (S1-S52)" = c(1, 52),
     "FHM6 Era" = c(53, 65),
     "66-Game FHM6 Era" = c(57, 65),
     "50-Game FHM6 Era" = c(53, 56),
-    "FHM8 Records"= c(66, max(shl_rs_stats$Season))
+    "FHM8 Records" = c(66, max(shl_rs_stats$Season))
   )
   return(seasons)
 }
@@ -79,7 +79,7 @@ shl_franchise_ps_stats <-
     con,
     "
     SELECT playerName, teamName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
-    ((SELECT * FROM shlFranchiseCareer WHERE isPlayoffs = 11)
+    ((SELECT * FROM shlFranchiseCareer WHERE isPlayoffs = 1)
     INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
     ON FHMID = FHMIDS
     INNER JOIN (SELECT teams.Name as teamName, fhmFranchiseId FROM teams WHERE League = 'SHL')
@@ -210,12 +210,13 @@ shl_goalie_career_ps_stats <-
   )
 
 return_skaters <- function(type, season) {
-    stats_table <- switch(
-      type,
-      "Career" = ifelse(season == "Playoffs", return(shl_career_ps_stats), return(shl_career_rs_stats)),
-      "Franchise" = ifelse(season == "Playoffs", return(shl_franchise_ps_stats), return(shl_franchise_rs_stats)),
-      "Season" = ifelse(season == "Playoffs", return(shl_ps_stats), return(shl_rs_stats)),
-    )
+  stats_table <- switch(
+    type,
+    "Career" = ifelse(season == "Playoffs", return(shl_career_ps_stats), return(shl_career_rs_stats)),
+    "Franchise" = ifelse(season == "Playoffs", return(shl_franchise_ps_stats), return(shl_franchise_rs_stats)),
+    "Season" = ifelse(season == "Playoffs", return(shl_ps_stats), return(shl_rs_stats)),
+  )
+  print(stats_table)
   return(stats_table)
 }
 
