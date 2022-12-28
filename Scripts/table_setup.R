@@ -229,3 +229,12 @@ return_goalies <- function(type, season) {
   )
   return(stats_table)
 }
+
+return_pos_df <- function(pos, type, season){
+  if(pos == "Skater"){
+    return(return_skaters(type, season))
+  }
+  else{
+    return(return_goalies(type, season))
+  }
+}

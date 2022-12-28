@@ -153,13 +153,7 @@ server <- function(input, output) {
   )
 
   output$season_stats_table <- renderReactable({
-    goalie_table <- return_goalies("Season", input$season)
-    print(goalie_table)
-    skater_table <- return_skaters("Season", input$season)
-    print(skater_table)
-    display_table <- ifelse(input$position == "Skater", return(skater_table), return(goalie_table))
-    print(display_table)
-    print("Skater")
+    display_table <- return_pos_df(input$position, "Season", input$season)
     reactable(
       display_table,
       bordered = TRUE,
@@ -174,7 +168,7 @@ server <- function(input, output) {
   })
 
   output$career_stats_table <- renderReactable({
-    display_table <- return_skaters("Career", input$season)
+    display_table <- return_pos_df(input$position, "Career", input$season)
     reactable(
       display_table,
       bordered = TRUE,
@@ -189,7 +183,7 @@ server <- function(input, output) {
   })
 
   output$franchise_stats_table <- renderReactable({
-    display_table <- return_skaters("Franchise", input$season)
+    display_table <- return_pos_df(input$position, "Franchise", input$season)
     reactable(
       display_table,
       bordered = TRUE,
