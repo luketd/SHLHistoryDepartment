@@ -124,8 +124,9 @@ hof_eligibility <-
     SELECT Name, lastSeason FROM
     (SELECT * FROM playerMaster
     INNER JOIN
-    (SELECT FHMID, max(Season) AS lastSeason FROM shlSkaters group by FHMID)
-    ON playerMaster.FHMIDS = FHMID)
+    (SELECT FHMID, isPlayoffs, max(Season) AS lastSeason FROM ( SELECT * FROM shlSkaters WHERE LeagueId = 1) group by FHMID)
+    ON playerMaster.FHMIDS = FHMID
+    )
     "
   )
 
@@ -238,6 +239,3 @@ return_pos_df <- function(pos, type, season){
     return(return_goalies(type, season))
   }
 }
-
-p <- shl_career_rs_stats
-print(p)
