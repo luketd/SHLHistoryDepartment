@@ -91,7 +91,7 @@ shl_career_rs_stats <-
   dbGetQuery(
     con,
     "
-    SELECT playerName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
+    SELECT playerName, FHMID, Pos, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
     ((SELECT * FROM shlCareers WHERE isPlayoffs = 0)
     INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
     ON FHMID = FHMIDS)
@@ -101,7 +101,7 @@ shl_career_ps_stats <-
   dbGetQuery(
     con,
     "
-    SELECT playerName, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
+    SELECT playerName, FHMID, Pos, GamesPlayed, Goals, Assists, Points, PlusMinus, PenaltyMinutes, Hits, Shots, ShotsBlocked, MinutesPlayed, PPGoals, PPAssists, PPPoints, PPMinutes, PKGoals, PKAssists, PKPoints, PKMinutes, GameWinningGoals, FaceoffsTotal, FaceoffWins, FightsWon, FightsLost FROM
     ((SELECT * FROM shlCareers WHERE isPlayoffs = 1)
     INNER JOIN (SELECT playerMaster.Name as playerName, FHMIDS FROM playerMaster)
     ON FHMID = FHMIDS)
@@ -238,3 +238,6 @@ return_pos_df <- function(pos, type, season){
     return(return_goalies(type, season))
   }
 }
+
+p <- shl_career_rs_stats
+print(p)

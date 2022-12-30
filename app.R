@@ -55,6 +55,15 @@ ui <-
       sidebarLayout(
         sidebarPanel(
           selectInput(
+            "type",
+            h4("Data Type"),
+            choices = list(
+              "Season",
+              "Career"
+            ),
+            selected = "Custom"
+          ),
+          selectInput(
             "era",
             h4("SHL Era"),
             choices = list(
@@ -114,7 +123,7 @@ ui <-
           uiOutput("eraSlider"),
           width = 2
         ),
-        mainPanel(plotOutput("kdaBar"))
+        mainPanel(plotOutput("kdaBar", width="123%"))
       )
     ),
     tabPanel(
@@ -213,17 +222,31 @@ server <- function(input, output) {
   })
 
   output$kdaBar <- renderPlot({
-    topChart <- return_skaters("Season", input$timeline) %>%
-      filter((input$seasonSlider[[1]] <= Season) &
-               (input$seasonSlider[[2]] >= Season)) %>%
-      select(playerName, Season, Stat = input$statLeader) %>%
-      group_by(playerName) %>%
-      mutate(name = paste0(playerName, ' (S', Season, ')')) %>%
-      summarise(name, Season, stat = Stat) %>%
-      ungroup(playerName) %>%
-      arrange(desc(stat)) %>%
-      top_n(10) %>%
-      unique()
+    if(input$type == "Season"){
+      topChart <- return_skaters("Season", input$timeline) %>%
+        filter((input$seasonSlider[[1]] <= Season) &
+                 (input$seasonSlider[[2]] >= Season)) %>%
+        select(playerName, Season, Stat = input$statLeader) %>%
+        group_by(playerName) %>%
+        mutate(name = paste0(playerName, ' (S', Season, ')')) %>%
+        summarise(name, Season, stat = Stat) %>%
+        ungroup(playerName) %>%
+        arrange(desc(stat)) %>%
+        top_n(10) %>%
+        unique()
+    }
+    else{
+      topChart <- shl_career_rs_stats %>%
+        select(playerName, FHMID, Pos, Stat = input$statLeader) %>%
+        group_by(playerName) %>%
+        mutate(name = paste0(playerName, ' - (', Pos, ')')) %>%
+        summarise(name, stat = Stat) %>%
+        ungroup(playerName) %>%
+        arrange(desc(stat)) %>%
+        top_n(10) %>%
+        unique()
+    }
+
 
     ggplot(topChart, aes(reorder(name, stat), y = stat)) +
       geom_bar(stat = "identity", fill = "#4cc9f0") +
