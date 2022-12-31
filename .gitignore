@@ -5,3 +5,5 @@
 /database/SQLiteStudio/*
 bankTransactions.csv
 /scripts/testing.R
+rsconnect/shinyapps.io/shlhistory/SHLHistoryDepartment.dcf
+passing.png
