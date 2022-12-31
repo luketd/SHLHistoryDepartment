@@ -14,11 +14,11 @@ source("Scripts/table_setup.R")
 # Define UI for application that draws a histogram
 ui <-
   navbarPage(
-    "SHL Hall of Fame DB",
+    "SHL History DB",
     header = includeCSS("Style/shlstylesheet.css"),
     tabPanel("Stats", fluidPage(
       # Application title
-      titlePanel("SHL Hall of Fame Data"),
+      titlePanel("SHL Historical Data"),
 
       # Sidebar with a slider input for number of bins
       sidebarLayout(
@@ -51,7 +51,7 @@ ui <-
     )),
     tabPanel(
       "Leaderboards",
-      titlePanel("SHL Hall of Fame Data"),
+      titlePanel("SHL Historical Leaderboards"),
       sidebarLayout(
         sidebarPanel(
           conditionalPanel(condition = "input.tabselected==1",
@@ -235,7 +235,7 @@ server <- function(input, output) {
               name
             ),
             tags$option(value = "", "All"),
-            lapply(unique(values), tags$option),
+            lapply(sort(unique(values)), tags$option),
             "aria-label" = sprintf("Filter %s", name),
             style = "width: 100%; height: 28px; background-color: #262626; text-align: center;"
           )
@@ -297,7 +297,7 @@ server <- function(input, output) {
               name
             ),
             tags$option(value = "", "All"),
-            lapply(unique(values), tags$option),
+            lapply(sort(unique(values)), tags$option),
             "aria-label" = sprintf("Filter %s", name),
             style = "width: 100%; height: 28px; background-color: #262626;"
           )
