@@ -18,7 +18,7 @@ for(i in 1:length(leagueList)){
   } else if (i == 2){
     league <- "smjhl"
   }
-
+}
 
 #####################
 # S53=2019
@@ -160,7 +160,7 @@ if(league == "shl") {
 dbWriteTable(con, "shlSkaters", playerSkaters, overwrite = F, append = T, row.names=FALSE)
 dbWriteTable(con, "shlGoalies", playerGoalies, overwrite = F, append = T, row.names=FALSE)
 
-}
+
 
 season <- season +1
 year <- year +1
