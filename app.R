@@ -14,11 +14,11 @@ source("Scripts/table_setup.R")
 # Define UI for application that draws a histogram
 ui <-
   navbarPage(
-    "SHL Hall of Fame DB",
+    "SHL Career Data",
     header = includeCSS("Style/shlstylesheet.css"),
     tabPanel("Stats", fluidPage(
       # Application title
-      titlePanel("SHL Hall of Fame Data"),
+      titlePanel("SHL Career Data"),
 
       # Sidebar with a slider input for number of bins
       sidebarLayout(sidebarPanel(
