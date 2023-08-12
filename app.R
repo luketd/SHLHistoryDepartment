@@ -39,7 +39,13 @@ ui <-
           tabPanel("Career Stats",
                    reactableOutput("career_stats_table")),
           tabPanel("Franchise Stats",
-                   reactableOutput("franchise_stats_table"))
+                   reactableOutput("franchise_stats_table")),
+          tabPanel("Goalie Season Stats",
+                   reactableOutput("goalie_season_stats_table")),
+          tabPanel("Goalie Career Stats",
+                   reactableOutput("goalie_career_stats_table")),
+          tabPanel("Goalie Franchise Stats",
+                   reactableOutput("goalie_franchise_stats_table"))
         )
       ))
     )),
@@ -209,6 +215,97 @@ server <- function(input, output) {
 
   output$franchise_stats_table <- renderReactable({
     display_table <- return_table("Franchise", input$season)
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      columns = list(teamName = colDef(
+        filterInput = function(values, name) {
+          tags$select(
+            onchange = sprintf(
+              "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+              name
+            ),
+            tags$option(value = "", "All"),
+            lapply(unique(values), tags$option),
+            "aria-label" = sprintf("Filter %s", name),
+            style = "width: 100%; height: 28px; background-color: #262626;"
+          )
+        }
+      )),
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "112.9%",
+      defaultColDef = colDef(align = "center"),
+      elementId = "team-select"
+    )
+  })
+
+  output$goalie_season_stats_table <- renderReactable({
+    display_table <- return_table("SeasonG", input$season)
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      columns = list(
+        teamName = colDef(
+          filterInput = function(values, name) {
+            tags$select(
+              onchange = sprintf(
+                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+                name
+              ),
+              tags$option(value = "", "All"),
+              lapply(unique(values), tags$option),
+              "aria-label" = sprintf("Filter %s", name),
+              style = "width: 100%; height: 28px; background-color: #262626;"
+            )
+          }
+        ),
+        Pos = colDef(
+          filterInput = function(values, name) {
+            tags$select(
+              onchange = sprintf(
+                "Reactable.setFilter('team-select', '%s', event.target.value || undefined)",
+                name
+              ),
+              tags$option(value = "", "All"),
+              lapply(unique(values), tags$option),
+              "aria-label" = sprintf("Filter %s", name),
+              style = "width: 100%; height: 28px; background-color: #262626;"
+            )
+          }
+        )
+      ),
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "112.9%",
+      defaultColDef = colDef(align = "center"),
+      elementId = "team-select"
+    )
+  })
+
+  output$goalie_career_stats_table <- renderReactable({
+    display_table <- return_table("CareerG", input$season)
+    reactable(
+      display_table,
+      bordered = TRUE,
+      filterable = TRUE,
+      showPageSizeOptions = TRUE,
+      striped = TRUE,
+      highlight = TRUE,
+      resizable = TRUE,
+      width = "112.9%",
+      defaultColDef = colDef(align = "center"),
+    )
+  })
+
+  output$goalie_franchise_stats_table <- renderReactable({
+    display_table <- return_table("FranchiseG", input$season)
     reactable(
       display_table,
       bordered = TRUE,
