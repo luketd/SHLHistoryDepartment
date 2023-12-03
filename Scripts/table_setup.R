@@ -124,6 +124,10 @@ hof_eligibility <-
     SELECT Name, lastSeason FROM
     (SELECT * FROM playerMaster
     INNER JOIN
+    (SELECT FHMID, max(Season) AS lastSeason FROM shlGoalies group by FHMID)
+    ON playerMaster.FHMIDS = FHMID) union SELECT Name, lastSeason FROM
+    (SELECT * FROM playerMaster
+    INNER JOIN
     (SELECT FHMID, max(Season) AS lastSeason FROM shlSkaters group by FHMID)
     ON playerMaster.FHMIDS = FHMID)
     "

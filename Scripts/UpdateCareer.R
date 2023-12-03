@@ -20,8 +20,10 @@ for(i in 1:length(leagueList)){
   }
 }
 
+league <- "shl"
 #####################
 # S53=2019
+# S74=2040
 #####################
 
 year = readRDS("year")
